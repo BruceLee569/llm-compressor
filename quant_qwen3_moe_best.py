@@ -169,7 +169,13 @@ oneshot(
     num_calibration_samples=NUM_CALIBRATION_SAMPLES,
 )
 
-# ================= 5. 测试生成效果 =================
+# ================= 5. 保存模型 =================
+print(f"正在保存压缩后的模型至: {SAVE_DIR}")
+model.save_pretrained(SAVE_DIR, save_compressed=True)
+tokenizer.save_pretrained(SAVE_DIR)
+print("保存完成！可以使用 vLLM 或 Transformers 直接加载。")
+
+# ================= 6. 测试生成效果 =================
 print("\n" + "="*20 + " 量化模型测试生成 " + "="*20)
 dispatch_for_generation(model)
 
@@ -191,12 +197,3 @@ print(f"输入: {test_prompt}")
 print(f"输出: {tokenizer.decode(output[0], skip_special_tokens=True).split('assistant')[-1].strip()}")
 print("="*50 + "\n")
 
-# ================= 6. 保存模型 =================
-print(f"正在保存压缩后的模型至: {SAVE_DIR}")
-model.save_pretrained(SAVE_DIR, save_compressed=True)
-tokenizer.save_pretrained(SAVE_DIR)
-print("="*60)
-print("保存完成！")
-print(f"模型已保存到: {SAVE_DIR}")
-print("可以使用 vLLM 或 Transformers 直接加载。")
-print("="*60)
