@@ -87,13 +87,15 @@ recipe = AWQModifier(
     targets=["Linear"],
     
     # 忽略（不量化）的模块：保持 FP16 以维持稳定性
+    # 注意：input_layernorm 和 post_attention_layernorm 需要参与 AWQ smoothing，
+    # 因此不能放在 ignore 列表中（否则会导致 mappings 匹配失败）
     ignore=[
         "lm_head",                           # 最终输出头
         "model.embed_tokens",                # 词嵌入层
-        "re:.*input_layernorm$",             # 各层输入 LayerNorm
-        "re:.*post_attention_layernorm$",    # 各层注意力后 LayerNorm
         "model.norm",                        # 顶层 norm
         "re:.*mlp.gate$",                    # MoE 路由 gate（关键！）
+        "re:.*self_attn.q_norm$",           # Q/K norm 层（Qwen3 特有）
+        "re:.*self_attn.k_norm$",
     ],
     
     # AWQ smoothing mappings（针对 Qwen3 MoE 结构的精确映射）
